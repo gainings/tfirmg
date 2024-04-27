@@ -3,7 +3,6 @@ package resource
 import (
 	"fmt"
 	"github.com/gainings/tfirmg/internal/model/resourceid"
-	"strings"
 )
 
 type Resource struct {
@@ -44,14 +43,17 @@ func (rf ResourceCreator) Create(typeName, resourceName, indexKey string, module
 		IndexKey: indexKey,
 	}
 	if moduleName != nil {
-		mn := strings.Split(*moduleName, ".")
-		r.Module = &struct{ Name string }{Name: mn[0]}
+		r.Module = &struct{ Name string }{Name: *moduleName}
 	}
 	return r
 }
 
 func (rf ResourceCreator) newAddress(typeName, resourceName, indexKey string, moduleName *string) Address {
 	if moduleName != nil {
+		if indexKey != "" {
+			fmt.Println("yay")
+			return Address(fmt.Sprintf("%s.%s.%s[%s]", *moduleName, typeName, resourceName, indexKey))
+		}
 		return Address(fmt.Sprintf("%s.%s.%s", *moduleName, typeName, resourceName))
 	} else if indexKey != "" {
 		return Address(fmt.Sprintf("%s.%s[%s]", typeName, resourceName, indexKey))
