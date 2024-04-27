@@ -1,7 +1,7 @@
 package rules
 
 import (
-	"github.com/gainings/tfirg/internal/model/resourceid"
+	"github.com/gainings/tfirmg/internal/model/resourceid"
 )
 
 const defaultRuleName = ""

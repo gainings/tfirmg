@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/gainings/tfirg/internal/usecase"
+	"github.com/gainings/tfirmg/internal/usecase"
 	"github.com/spf13/cobra"
 )
 

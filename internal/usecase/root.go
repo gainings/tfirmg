@@ -2,11 +2,11 @@ package usecase
 
 import (
 	"context"
-	"github.com/gainings/tfirg/internal/hcl"
-	"github.com/gainings/tfirg/internal/model/resource"
-	"github.com/gainings/tfirg/internal/rules"
-	_ "github.com/gainings/tfirg/internal/rules/providers/aws"
-	"github.com/gainings/tfirg/internal/tfstate"
+	"github.com/gainings/tfirmg/internal/hcl"
+	"github.com/gainings/tfirmg/internal/model/resource"
+	"github.com/gainings/tfirmg/internal/rules"
+	_ "github.com/gainings/tfirmg/internal/rules/providers/aws"
+	"github.com/gainings/tfirmg/internal/tfstate"
 	"github.com/spf13/cobra"
 	"os"
 	"path/filepath"
@@ -95,11 +95,11 @@ func (ru rootUsecase) run(ctx context.Context) error {
 
 	ibs, rbs := generateHCLBlocks(onlyCode)
 
-	if err := writeToFile(dstDir, "import.tf", ibs.Bytes()); err != nil {
+	if err := writeToFile(ru.options.dstDir, "import.tf", ibs.Bytes()); err != nil {
 		return err
 	}
 
-	if err := writeToFile(srcDir, "removed.tf", rbs.Bytes()); err != nil {
+	if err := writeToFile(ru.options.srcDir, "removed.tf", rbs.Bytes()); err != nil {
 		return err
 	}
 

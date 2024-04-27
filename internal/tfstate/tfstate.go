@@ -3,7 +3,7 @@ package tfstate
 import (
 	"context"
 	"encoding/json"
-	"github.com/gainings/tfirg/internal/model/resource"
+	"github.com/gainings/tfirmg/internal/model/resource"
 	"io"
 	"net/url"
 	"os"

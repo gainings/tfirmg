@@ -1,4 +1,4 @@
-module github.com/gainings/tfirg
+module github.com/gainings/tfirmg
 
 go 1.21.4
 

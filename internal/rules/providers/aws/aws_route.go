@@ -2,8 +2,8 @@ package aws
 
 import (
 	"fmt"
-	"github.com/gainings/tfirg/internal/model/resourceid"
-	"github.com/gainings/tfirg/internal/rules"
+	"github.com/gainings/tfirmg/internal/model/resourceid"
+	"github.com/gainings/tfirmg/internal/rules"
 )
 
 func init() {

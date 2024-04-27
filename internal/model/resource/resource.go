@@ -2,7 +2,7 @@ package resource
 
 import (
 	"fmt"
-	"github.com/gainings/tfirg/internal/model/resourceid"
+	"github.com/gainings/tfirmg/internal/model/resourceid"
 	"strings"
 )
 
