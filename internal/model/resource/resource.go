@@ -2,6 +2,7 @@ package resource
 
 import (
 	"fmt"
+
 	"github.com/gainings/tfirmg/internal/model/resourceid"
 )
 
@@ -51,7 +52,6 @@ func (rf ResourceCreator) Create(typeName, resourceName, indexKey string, module
 func (rf ResourceCreator) newAddress(typeName, resourceName, indexKey string, moduleName *string) Address {
 	if moduleName != nil {
 		if indexKey != "" {
-			fmt.Println("yay")
 			return Address(fmt.Sprintf("%s.%s.%s[%s]", *moduleName, typeName, resourceName, indexKey))
 		}
 		return Address(fmt.Sprintf("%s.%s.%s", *moduleName, typeName, resourceName))
