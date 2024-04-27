@@ -98,7 +98,7 @@ resource "aws_instance" "my_perfect_app" {
   }
 }
 ```
-Whent want to refactor this Terraform to move resources to a different state.
+When you want to refactor this Terraform to move resources to a different state.
 
 Please move the code yourself using the same resource name.
 
@@ -153,22 +153,29 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
-module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+data "aws_ami" "ubuntu" {
+  most_recent = true
 
-  name = "my-vpc"
-  cidr = "10.0.0.0/16"
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
 
-  azs             = ["ap-northeast-1a", "ap-northeast-1c", "ap-northeast-1d"]
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 
-  enable_nat_gateway = false
-  enable_vpn_gateway = false
+  owners = ["099720109477"]
+}
+
+resource "aws_instance" "my_perfect_app" {
+  ami           = data.aws_ami.ubuntu.id
+  instance_type = "t3.micro"
 
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
+    Terraform = "true"
+    Name      = "HelloWorld"
   }
 }
 ```
@@ -176,7 +183,7 @@ module "vpc" {
 Use the following commands to generate the import block and remove block
 
 ```bash
-tfirmg generate --src-dir ./current_state --dst-dir ./app_state --src-tfstate-path file://$(PWD)my-tfstate/tfstate``
+tfirmg generate --src-dir ./current_state --dst-dir ./app_state --src-tfstate-path file://$(PWD)/current_state/terraform.tfstate
 ```
 
 This command create following files.
@@ -260,7 +267,7 @@ module "vpc" {
 ```
 
 ```bash
-tfirmg generate --src-dir ./current_state --dst-dir ./network_state --src-tfstate-path file://$(PWD)my-tfstate/tfstate``
+tfirmg generate --src-dir ./current_state --dst-dir ./network_state --src-tfstate-path file://$(PWD)/current_state/terraform.tfstate
 ```
 
 its generate code like this.
@@ -306,4 +313,5 @@ import {
   to = module.vpc.aws_internet_gateway.this[0]
   id = "igw-123456789abcdef"
 }
+...
 ```
