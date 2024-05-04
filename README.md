@@ -31,7 +31,13 @@ https://github.com/gainings/tfirmg/releases
 tfirmg root --src-dir ./current_state --dst-dir ./new_state --src-tfstate-path file://my-tfstate/tfstate
 
 ## s3 
-tfirmg geenrate --src-dir ./current_state --dst-dir ./new_state --src-tfstate-path s3://my-example-bucket/tfstate
+tfirmg root --src-dir ./current_state --dst-dir ./new_state --src-tfstate-path s3://my-example-bucket/tfstate
+
+# moving resources within a module to same tfstate.
+tfirmg module --src-module module_a --dst-module module_b --src-dir ./ --dst-dir ./ --src-tfstate-path file://$(PWD)/terraform.tfstate
+
+# moving resources within a module to another tfstate.
+tfirmg module --src-module module_a --dst-module module_b --src-dir ./ --dst-dir ./other --src-tfstate-path file://$(PWD)/terraform.tfstate
 ```
 
 ## Introduction
