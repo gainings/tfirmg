@@ -28,7 +28,7 @@ https://github.com/gainings/tfirmg/releases
 
 ```bash
 ## local file
-tfirmg generate --src-dir ./current_state --dst-dir ./new_state --src-tfstate-path file://my-tfstate/tfstate
+tfirmg root --src-dir ./current_state --dst-dir ./new_state --src-tfstate-path file://my-tfstate/tfstate
 
 ## s3 
 tfirmg geenrate --src-dir ./current_state --dst-dir ./new_state --src-tfstate-path s3://my-example-bucket/tfstate
@@ -183,7 +183,7 @@ resource "aws_instance" "my_perfect_app" {
 Use the following commands to generate the import block and remove block
 
 ```bash
-tfirmg generate --src-dir ./current_state --dst-dir ./app_state --src-tfstate-path file://$(PWD)/current_state/terraform.tfstate
+tfirmg root --src-dir ./current_state --dst-dir ./app_state --src-tfstate-path file://$(PWD)/current_state/terraform.tfstate
 ```
 
 This command create following files.
@@ -267,7 +267,7 @@ module "vpc" {
 ```
 
 ```bash
-tfirmg generate --src-dir ./current_state --dst-dir ./network_state --src-tfstate-path file://$(PWD)/current_state/terraform.tfstate
+tfirmg root --src-dir ./current_state --dst-dir ./network_state --src-tfstate-path file://$(PWD)/current_state/terraform.tfstate
 ```
 
 its generate code like this.

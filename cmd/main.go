@@ -23,15 +23,15 @@ func init() {
 	}
 	rc := runRootCmd()
 	rc.Flags().String("src-dir", "", "src directory that exists terraform files")
-	rc.Flags().String("dst-dir", "", "dst directory that  terraform files")
+	rc.Flags().String("dst-dir", "", "dst directory that terraform files")
 	rc.Flags().String("src-tfstate-path", "", "tfstate path")
 
 	mc := runModuleCmd()
 	mc.Flags().String("src-dir", "", "src directory that exists terraform files")
-	mc.Flags().String("dst-dir", "", "dst directory that  terraform files")
+	mc.Flags().String("dst-dir", "", "dst directory that terraform files")
 	mc.Flags().String("src-tfstate-path", "", "tfstate path")
-	mc.Flags().String("src-module", "", "src directory that exists terraform files")
-	mc.Flags().String("dst-module", "", "dst directory that  terraform files")
+	mc.Flags().String("src-module", "", "src module name that resource moved")
+	mc.Flags().String("dst-module", "", "dst module name that will be moved")
 
 	BaseCmd.AddCommand(
 		rc,
@@ -40,8 +40,8 @@ func init() {
 }
 func runRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "generate",
-		Short: "Generate import and moved block",
+		Use:   "root",
+		Short: "Generate import and moved block for root module",
 		RunE:  usecase.Root,
 	}
 	cmd.Flags().SetInterspersed(false)
@@ -50,7 +50,7 @@ func runRootCmd() *cobra.Command {
 func runModuleCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "module",
-		Short: "Generate import and moved block",
+		Short: "Generate import, removed and moved block for specific modules",
 		RunE:  usecase.Module,
 	}
 	cmd.Flags().SetInterspersed(false)
