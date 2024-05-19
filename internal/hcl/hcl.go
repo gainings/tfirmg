@@ -38,6 +38,35 @@ func ParseHCL(dirPath string) (Hcl, error) {
 	return Hcl{Blocks: blocks}, nil
 }
 
+type BackendInfo struct {
+	Type       string
+	Attributes map[string]string
+}
+
+func (h Hcl) BackendURL() (*BackendInfo, error) {
+	for _, block := range h.Blocks {
+		if block.Type == "terraform" {
+			for _, innerBlock := range block.Body.Blocks {
+				if innerBlock.Type == "backend" {
+					backendInfo := &BackendInfo{
+						Type:       innerBlock.Labels[0],
+						Attributes: make(map[string]string),
+					}
+					for _, attr := range innerBlock.Body.Attributes {
+						val, diags := attr.Expr.Value(nil)
+						if diags.HasErrors() {
+							return nil, fmt.Errorf("error reading attribute %s: %s", attr.Name, diags.Error())
+						}
+						backendInfo.Attributes[attr.Name] = fmt.Sprintf("%v", val.AsString())
+					}
+					return backendInfo, nil
+				}
+			}
+		}
+	}
+	return nil, fmt.Errorf("no backend block found")
+}
+
 // ResourceNameMap is return map store terraform resource name
 func (h Hcl) ResourceNameMap() map[string]struct{} {
 	resources := make(map[string]struct{})
