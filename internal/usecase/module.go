@@ -112,7 +112,7 @@ func (mu moduleUsecase) run(ctx context.Context) error {
 	}
 	srcTFStateResources := mu.transformer.TransformToResources(srcTfstate)
 
-	notFoundResources := mu.findMissingResourcesInModules(srcResourceMap, srcTFStateResources)
+	notFoundResources, notFoundResourcesInModules := mu.findMissingResourcesInModules(srcResourceMap, srcTFStateResources)
 
 	var onlyCode []resource.Resource
 	for key, _ := range dstResourceMap {
@@ -122,6 +122,14 @@ func (mu moduleUsecase) run(ctx context.Context) error {
 				onlyCode = append(onlyCode, i)
 				continue
 			}
+		}
+
+		rs, existInModule := notFoundResourcesInModules[key]
+		if existInModule {
+			for _, r := range rs {
+				onlyCode = append(onlyCode, r...)
+			}
+			continue
 		}
 	}
 
@@ -146,22 +154,36 @@ func (mu moduleUsecase) run(ctx context.Context) error {
 	return nil
 }
 
-func (mu moduleUsecase) findMissingResourcesInModules(resourceNameMap map[string]struct{}, srcTfstateResources resource.Resources) map[string]map[string]resource.Resource {
+// findMissingResourceInModules return
+func (mu moduleUsecase) findMissingResourcesInModules(resourceNameMap map[string]struct{}, srcTfstateResources resource.Resources) (map[string]map[string]resource.Resource, map[string]map[string]resource.Resources) {
 	notFoundResources := make(map[string]map[string]resource.Resource)
+	notFoundResourceInModules := make(map[string]map[string]resource.Resources)
 
 	for _, r := range srcTfstateResources {
-		if r.Module == nil || r.Module.Name != fmt.Sprintf("module.%s", mu.options.srcModule) {
+		if r.Module == nil {
 			continue
 		}
-		if _, ok := resourceNameMap[r.Name]; !ok {
-			if _, exists := notFoundResources[r.Name]; !exists {
-				notFoundResources[r.Name] = make(map[string]resource.Resource)
+
+		if r.Module.Name == fmt.Sprintf("module.%s", mu.options.srcModule) {
+			if _, ok := resourceNameMap[r.Name]; !ok {
+				k := strings.TrimPrefix(r.Name, mu.options.srcModule)
+				if _, exists := notFoundResources[k]; !exists {
+					notFoundResources[k] = make(map[string]resource.Resource)
+				}
+				notFoundResources[k][r.IndexKey] = r
 			}
-			notFoundResources[r.Name][r.IndexKey] = r
+		} else {
+			if _, ok := resourceNameMap[r.Name]; !ok {
+				k := strings.TrimPrefix(r.Module.Name, fmt.Sprintf("module.%s.", mu.options.srcModule))
+				if _, exists := notFoundResourceInModules[k]; !exists {
+					notFoundResourceInModules[k] = make(map[string]resource.Resources)
+				}
+				notFoundResourceInModules[k][r.IndexKey] = append(notFoundResourceInModules[k][r.IndexKey], r)
+			}
 		}
 	}
 
-	return notFoundResources
+	return notFoundResources, notFoundResourceInModules
 }
 func (mu moduleUsecase) generateMovedBlocks(onlyCode []resource.Resource) hcl.MovedBlocks {
 	var mbs hcl.MovedBlocks
