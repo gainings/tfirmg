@@ -2,6 +2,7 @@ package hcl
 
 import (
 	"fmt"
+	"github.com/spf13/afero"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -14,17 +15,23 @@ type Hcl struct {
 	Blocks hclsyntax.Blocks
 }
 
+var aferoFS = afero.NewOsFs()
+
 func ParseHCL(dirPath string) (Hcl, error) {
 	parser := hclparse.NewParser()
 	var blocks hclsyntax.Blocks
-	filepath.WalkDir(dirPath, func(path string, info fs.DirEntry, err error) error {
+	afero.Walk(aferoFS, dirPath, func(path string, info fs.FileInfo, err error) error {
 		if info != nil && info.IsDir() && path != dirPath {
 			return filepath.SkipDir // skip subdirectory
 		}
 		if !strings.HasSuffix(path, ".tf") {
 			return nil
 		}
-		file, diags := parser.ParseHCLFile(path)
+		c, err := afero.ReadFile(aferoFS, path)
+		if err != nil {
+			return fmt.Errorf("Failed to read file: %s", err)
+		}
+		file, diags := parser.ParseHCL(c, path)
 		if diags.HasErrors() {
 			return fmt.Errorf("Failed to parse file: %s", diags.Error())
 		}
