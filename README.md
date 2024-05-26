@@ -15,7 +15,7 @@ Need removed block supported.
 
 ### Go install
 ```bash
-go install github.com/gainings/tfirmg
+go install github.com/gainings/tfirmg@latest
 ````
 
 ### Download
