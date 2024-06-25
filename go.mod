@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.30.0
 	github.com/aws/aws-sdk-go-v2/config v1.27.21
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.56.1
-	github.com/hashicorp/hcl/v2 v2.20.1
+	github.com/hashicorp/hcl/v2 v2.21.0
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/afero v1.11.0
 	github.com/spf13/cobra v1.8.1
