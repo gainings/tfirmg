@@ -8,8 +8,6 @@ import (
 	_ "github.com/gainings/tfirmg/internal/rules/providers/aws"
 	"github.com/gainings/tfirmg/internal/tfstate"
 	"github.com/spf13/cobra"
-	"os"
-	"path/filepath"
 )
 
 // Root is command root to generate terraform code for root resources
@@ -144,9 +142,4 @@ func generateHCLBlocks(onlyCode []resource.Resource) (hcl.ImportBlocks, hcl.Remo
 	}
 
 	return ibs, rbs
-}
-
-func writeToFile(dir, filename string, data []byte) error {
-	filePath := filepath.Join(dir, filename)
-	return os.WriteFile(filePath, data, os.FileMode(0644))
 }
