@@ -10,6 +10,7 @@ import (
 	_ "github.com/gainings/tfirmg/internal/rules/providers/aws"
 	"github.com/gainings/tfirmg/internal/tfstate"
 	"github.com/spf13/cobra"
+	"log/slog"
 	"os"
 	"path"
 	"strings"
@@ -159,6 +160,7 @@ func (mu moduleUsecase) findMissingResourcesInModules(resourceNameMap map[string
 	notFoundResources := make(map[string]map[string]resource.Resource)
 	notFoundResourceInModules := make(map[string]map[string]resource.Resources)
 
+	slog.Debug("---Find missing resource in modules---")
 	for _, r := range srcTfstateResources {
 		if r.Module == nil {
 			continue
@@ -170,6 +172,7 @@ func (mu moduleUsecase) findMissingResourcesInModules(resourceNameMap map[string
 				if _, exists := notFoundResources[k]; !exists {
 					notFoundResources[k] = make(map[string]resource.Resource)
 				}
+				slog.Debug("This resource removed from terraform code", "target resource", r.Name, "index", r.IndexKey, "module", r.Module.Name)
 				notFoundResources[k][r.IndexKey] = r
 			}
 		} else {
@@ -178,6 +181,7 @@ func (mu moduleUsecase) findMissingResourcesInModules(resourceNameMap map[string
 				if _, exists := notFoundResourceInModules[k]; !exists {
 					notFoundResourceInModules[k] = make(map[string]resource.Resources)
 				}
+				slog.Debug("This resource removed from terraform code", "target resource", r.Name, "index", r.IndexKey, "module", r.Module.Name)
 				notFoundResourceInModules[k][r.IndexKey] = append(notFoundResourceInModules[k][r.IndexKey], r)
 			}
 		}
@@ -192,6 +196,7 @@ func (mu moduleUsecase) generateMovedBlocks(onlyCode []resource.Resource) hcl.Mo
 		parts := strings.Split(r.Address.String(), ".")
 		parts[1] = mu.options.dstModule
 
+		slog.Debug("Generate Moved Block", "target resource", r.Name, "index", r.IndexKey, "module", r.Module.Name)
 		mb := hcl.MovedBlock{
 			From: r.Address.String(),
 			To:   strings.Join(parts, "."),
@@ -206,10 +211,12 @@ func (mu moduleUsecase) generateImportRemovedBlocks(onlyCode []resource.Resource
 	var ibs hcl.ImportBlocks
 	var rbs hcl.RemoveBlocks
 
+	slog.Debug("---Generate HCL Blocks---")
 	for _, r := range onlyCode {
 		parts := strings.Split(r.Address.String(), ".")
 		parts[1] = mu.options.dstModule
 
+		slog.Debug("Generate Import / Remved Block", "target resource", r.Name, "index", r.IndexKey, "module", r.Module.Name)
 		ib := hcl.ImportBlock{
 			To: strings.Join(parts, "."),
 			ID: r.ID.String(),
