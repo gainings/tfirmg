@@ -8,6 +8,7 @@ import (
 	_ "github.com/gainings/tfirmg/internal/rules/providers/aws"
 	"github.com/gainings/tfirmg/internal/tfstate"
 	"github.com/spf13/cobra"
+	"log/slog"
 )
 
 // Root is command root to generate terraform code for root resources
@@ -108,13 +109,16 @@ func findMissingResources(resourceNameMap map[string]struct{}, srcTfstateResourc
 	notFoundResources := make(map[string]resource.Resource)
 	notFoundResourceInModules := make(map[string][]resource.Resource)
 
+	slog.Debug("---Find missing resources---")
 	for _, r := range srcTfstateResources {
 		if r.Module != nil {
 			if _, ok := resourceNameMap[r.Module.Name]; !ok {
+				slog.Debug("This resource removed from terraform code", "target resource", r.Name, "index", r.IndexKey, "module", r.Module.Name)
 				notFoundResourceInModules[r.Module.Name] = append(notFoundResourceInModules[r.Module.Name], r)
 			}
 		} else {
 			if _, ok := resourceNameMap[r.Name]; !ok {
+				slog.Debug("This resource removed from terraform code", "target resource", r.Name, "index", r.IndexKey)
 				notFoundResources[r.Name] = r
 			}
 		}
@@ -127,7 +131,9 @@ func generateHCLBlocks(onlyCode []resource.Resource) (hcl.ImportBlocks, hcl.Remo
 	var ibs hcl.ImportBlocks
 	var rbs hcl.RemoveBlocks
 
+	slog.Debug("---Generate HCL Blocks---")
 	for _, r := range onlyCode {
+		slog.Debug("Generate Import / Remved Block", "target resource", r.Name, "index", r.IndexKey)
 		ib := hcl.ImportBlock{
 			To: r.Address.String(),
 			ID: r.ID.String(),
