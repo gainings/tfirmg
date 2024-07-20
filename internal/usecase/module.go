@@ -166,7 +166,8 @@ func (mu moduleUsecase) findMissingResourcesInModules(resourceNameMap map[string
 			continue
 		}
 
-		if r.Module.Name == fmt.Sprintf("module.%s", mu.options.srcModule) {
+		srcMn := fmt.Sprintf("module.%s", mu.options.srcModule)
+		if r.Module.Name == srcMn {
 			if _, ok := resourceNameMap[r.Name]; !ok {
 				k := strings.TrimPrefix(r.Name, mu.options.srcModule)
 				if _, exists := notFoundResources[k]; !exists {
@@ -177,7 +178,7 @@ func (mu moduleUsecase) findMissingResourcesInModules(resourceNameMap map[string
 			}
 		} else {
 			if _, ok := resourceNameMap[r.Name]; !ok {
-				k := strings.TrimPrefix(r.Module.Name, fmt.Sprintf("module.%s.", mu.options.srcModule))
+				k := strings.Join([]string{strings.TrimPrefix(r.Module.Name, fmt.Sprintf("module.%s.", mu.options.srcModule)), r.Name}, ".")
 				if _, exists := notFoundResourceInModules[k]; !exists {
 					notFoundResourceInModules[k] = make(map[string]resource.Resources)
 				}
@@ -214,7 +215,12 @@ func (mu moduleUsecase) generateImportRemovedBlocks(onlyCode []resource.Resource
 	slog.Debug("---Generate HCL Blocks---")
 	for _, r := range onlyCode {
 		parts := strings.Split(r.Address.String(), ".")
-		parts[1] = mu.options.dstModule
+		dstParts := strings.Split(strings.Join([]string{"module", mu.options.dstModule}, "."), ".")
+		for i := 0; i < len(dstParts); i++ {
+			if i < len(parts) {
+				parts[i] = dstParts[i]
+			}
+		}
 
 		slog.Debug("Generate Import / Remved Block", "target resource", r.Name, "index", r.IndexKey, "module", r.Module.Name)
 		ib := hcl.ImportBlock{

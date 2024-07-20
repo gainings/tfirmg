@@ -3,6 +3,7 @@ package modulemeta
 import (
 	"encoding/json"
 	"io"
+	"strings"
 )
 
 type Module struct {
@@ -29,8 +30,12 @@ func (mm ModuleMeta) GetModuleMap() map[string]Module {
 	mMap := make(map[string]Module)
 	for _, m := range mm.Modules {
 		if m.Key != "" {
-			mMap[m.Key] = m
+			mMap[mm.format(m.Key)] = m
 		}
 	}
 	return mMap
+}
+func (mm ModuleMeta) format(key string) string {
+	parts := strings.Split(key, ".")
+	return strings.Join(parts, ".module.")
 }
