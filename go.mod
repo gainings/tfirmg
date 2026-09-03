@@ -1,6 +1,6 @@
 module github.com/gainings/tfirmg
 
-go 1.21.4
+go 1.25
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.3
@@ -11,12 +11,13 @@ require (
 	github.com/spf13/afero v1.11.0
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
-	github.com/zclconf/go-cty v1.15.0
+	github.com/zclconf/go-cty v1.19.0
 )
 
 require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
+	github.com/apparentlymart/go-textseg/v17 v17.0.1 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.27 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.11 // indirect
